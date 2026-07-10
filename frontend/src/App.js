@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
-const API_URL = "https://gestion-sucursales.onrender.com/api/sucursales";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api/sucursales";
 
 const api = {
   obtenerTodas: async () => {
