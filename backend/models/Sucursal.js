@@ -30,14 +30,4 @@ const Sucursal = sequelize.define('Sucursal', {
   updatedAt: 'updatedAt'
 });
 
-// Sincronizar modelo con la base de datos
-(async () => {
-  try {
-    await Sucursal.sync({ alter: true });  // alter: true actualiza la tabla si existe
-    console.log('✅ Modelo Sucursal sincronizado');
-  } catch (error) {
-    console.error('❌ Error al sincronizar:', error.message);
-  }
-})();
-
 module.exports = Sucursal;

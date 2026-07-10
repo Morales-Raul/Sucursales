@@ -1,27 +1,15 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('master', 'sa', 'Admin123!', {
-  host: 'localhost',
-  port: 1433,
-  dialect: 'mssql',
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  protocol: 'postgres',
+  logging: false,
   dialectOptions: {
-    options: {
-      encrypt: false,
-      trustServerCertificate: true
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
     }
-  },
-  logging: false
-});
-
-async function testConnection() {
-  try {
-    await sequelize.authenticate();
-    console.log('✅ Conexion exitosa a SQL Server');
-  } catch (error) {
-    console.error('❌ Error:', error.message);
   }
-}
-
-testConnection();
+});
 
 module.exports = sequelize;

@@ -28,14 +28,15 @@ const startServer = async () => {
   try {
   
     await sequelize.authenticate();
-    console.log('✅ Conectado a MySQL');
+    console.log('✅ Conectado a PostgretSQL');
     
     // Sincronizar modelos
     await sequelize.sync({ force: false }); 
     console.log('🗄️ Base de datos sincronizada');
     
+    const PORT = process.env.PORT || 3001;
     // Arrancar servidor
-    app.listen(3001, () => {
+    app.listen(PORT, () => {
       console.log('🚀 Servidor backend corriendo en puerto 3001');
       console.log('📝 Endpoints disponibles:');
       console.log('   GET    /api/sucursales');
