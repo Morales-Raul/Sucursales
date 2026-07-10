@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize');
 
+//Conexión sequelize-postgrestsql
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
