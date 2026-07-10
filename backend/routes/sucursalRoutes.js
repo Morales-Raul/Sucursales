@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
     });
     
     console.log('✅ Sucursal creada:', nuevaSucursal.id);
-    res.json(nuevaSucursal);
+    res.status(201).json(nuevaSucursal);
   } catch (error) {
     console.error('❌ Error en POST /:', error);
     res.status(500).json({ error: 'Error al crear sucursal', details: error.message });

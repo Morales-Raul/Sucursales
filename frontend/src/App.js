@@ -1,81 +1,66 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
-// ========== SIMULADOR DE BASE DE DATOS LOCAL ==========
-const DB_KEY = 'sucursales_db';
+const API_URL = "https://gestion-sucursales.onrender.com/api/sucursales";
 
-// Leer datos del localStorage
-const leerDB = () => {
-  const datos = localStorage.getItem(DB_KEY);
-  return datos ? JSON.parse(datos) : [];
-};
-
-// Guardar datos en localStorage
-const guardarDB = (sucursales) => {
-  localStorage.setItem(DB_KEY, JSON.stringify(sucursales));
-};
-
-// Generar ID único
-const generarId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
-
-// ========== FUNCIONES SIMULADAS DE API ==========
 const api = {
-  // Obtener todas las sucursales
-  obtenerTodas: () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(leerDB()), 300);
+  obtenerTodas: async () => {
+    const response = await fetch(`${API_URL}/todas`);
+    if (!response.ok) throw new Error("Error al obtener sucursales");
+    return await response.json();
+  },
+
+  crear: async (sucursal) => {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(sucursal)
     });
+
+    if (!response.ok) throw new Error("Error al crear sucursal");
+    return await response.json();
   },
 
-  // Crear sucursal
-  crear: (sucursal) => {
-    return new Promise((resolve) => {
-      const sucursales = leerDB();
-      const nueva = {
-        ...sucursal,
-        id: generarId(),
-        activa: true,
-        fechaCreacion: new Date().toISOString()
-      };
-      sucursales.push(nueva);
-      guardarDB(sucursales);
-      setTimeout(() => resolve(nueva), 300);
+  actualizar: async (id, datos) => {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(datos)
     });
+
+    if (!response.ok) throw new Error("Error al actualizar");
+    return await response.json();
   },
 
-  // Actualizar sucursal
-  actualizar: (id, datos) => {
-    return new Promise((resolve, reject) => {
-      const sucursales = leerDB();
-      const index = sucursales.findIndex(s => s.id === id);
-      if (index === -1) return reject('No encontrada');
-      sucursales[index] = { ...sucursales[index], ...datos };
-      guardarDB(sucursales);
-      setTimeout(() => resolve(sucursales[index]), 300);
+  darDeBaja: async (id) => {
+    const response = await fetch(`${API_URL}/baja/${id}`, {
+      method: "PUT"
     });
+
+    if (!response.ok) throw new Error("Error al dar de baja");
+    return await response.json();
   },
 
-  // Dar de baja
-  darDeBaja: (id) => {
-    return api.actualizar(id, { activa: false, fechaBaja: new Date().toISOString() });
-  },
-
-  // Dar de alta
-  darDeAlta: (id) => {
-    return api.actualizar(id, { activa: true, fechaAlta: new Date().toISOString() });
-  },
-
-  // Eliminar permanentemente
-  eliminar: (id) => {
-    return new Promise((resolve, reject) => {
-      const sucursales = leerDB();
-      const filtradas = sucursales.filter(s => s.id !== id);
-      if (filtradas.length === sucursales.length) return reject('No encontrada');
-      guardarDB(filtradas);
-      setTimeout(() => resolve(), 300);
+  darDeAlta: async (id) => {
+    const response = await fetch(`${API_URL}/alta/${id}`, {
+      method: "PUT"
     });
+
+    if (!response.ok) throw new Error("Error al dar de alta");
+    return await response.json();
+  },
+
+  eliminar: async (id) => {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!response.ok) throw new Error("Error al eliminar");
+    return await response.json();
   }
 };
 
@@ -315,7 +300,7 @@ function App() {
                 <tbody>
                   {sucursales.map((sucursal) => (
                     <tr key={sucursal.id}>
-                      <td>{sucursal.id.substring(0, 8)}...</td>
+                      <td>{sucursal.id}</td>
                       <td>{sucursal.nombre}</td>
                       <td>{sucursal.direccion}</td>
                       <td>{sucursal.telefono}</td>
@@ -350,7 +335,7 @@ function App() {
                 <tbody>
                   {sucursalesInactivas.map((sucursal) => (
                     <tr key={sucursal.id} className="fila-inactiva">
-                      <td>{sucursal.id.substring(0, 8)}...</td>
+                      <td>{sucursal.id}</td>
                       <td>{sucursal.nombre}</td>
                       <td>{sucursal.direccion}</td>
                       <td>{sucursal.telefono}</td>
